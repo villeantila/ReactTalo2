@@ -40,10 +40,10 @@ namespace WebApplication3.Controllers
         public IEnumerable<Valot> Valot(int id)
         {
             MobiilikantaContext db = new MobiilikantaContext();
-            List<Valot> valot = (from v in db.Valot
-                                 where v.TaloId == id
-                                 orderby v.ValoId ascending
-                                 select v).ToList();
+            IEnumerable<Valot> valot = (from v in db.Valot
+                                        where v.TaloId == id
+                                        orderby v.ValoId ascending
+                                        select v).ToList();
             db.Dispose();
             return valot;
         }
@@ -53,10 +53,10 @@ namespace WebApplication3.Controllers
         public IEnumerable<Saunat> Saunat(int id)
         {
             MobiilikantaContext db = new MobiilikantaContext();
-            List<Saunat> saunat = (from s in db.Saunat
-                                 where s.TaloId == id
-                                 orderby s.SaunaId ascending
-                                 select s).ToList();
+            IEnumerable<Saunat> saunat = (from s in db.Saunat
+                                          where s.TaloId == id
+                                          orderby s.SaunaId ascending
+                                          select s).ToList();
             db.Dispose();
             return saunat;
         }
@@ -94,17 +94,16 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [Route("api/MuutaValonTilaa")]
 
-        public bool MuokkaaValoa(Valot valo)
+        public bool MuokkaaValoa(Valot uusi)
         {
             bool OK = false;
             MobiilikantaContext db = new MobiilikantaContext();
 
-            Valot lamppu = db.Valot.Find(valo.ValoId);
-            lamppu.ValonMaara = valo.ValonMaara;
+            Valot valo = db.Valot.Find(uusi.ValoId);
+            valo.ValonMaara = uusi.ValonMaara;
             try
             {
-                
-                db.Entry(lamppu).State = EntityState.Modified;
+                db.Entry(valo).State = EntityState.Modified;
                 db.SaveChanges();
                 OK = true;
             }
@@ -114,7 +113,7 @@ namespace WebApplication3.Controllers
                 db.Dispose();
             }
             return OK;
-            
+
         }
     }
 }
