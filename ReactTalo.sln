@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2046
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactTalo", "WebApplication3\ReactTalo.csproj", "{7B017205-A1F2-4815-92EC-900619AD7DEA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B017205-A1F2-4815-92EC-900619AD7DEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B017205-A1F2-4815-92EC-900619AD7DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B017205-A1F2-4815-92EC-900619AD7DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B017205-A1F2-4815-92EC-900619AD7DEA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {90AE518C-B09D-48CE-BE0C-0D7C2E37C749}
+	EndGlobalSection
+EndGlobal
