@@ -11,16 +11,14 @@ using WebApplication3.Models;
 
 namespace WebApplication3.Controllers
 {
-
     public class DefaultController : Controller
     {
-
         [HttpGet]
         [Route("api/Talot")]
-        public IEnumerable<Talot> Talot()
+        public List<Talot> Talot()
         {
             MobiilikantaContext db = new MobiilikantaContext();
-            IEnumerable<Talot> talot = db.Talot.ToList();
+            List<Talot> talot = db.Talot.ToList();
             db.Dispose();
             return talot;
         }
@@ -37,26 +35,24 @@ namespace WebApplication3.Controllers
 
         [HttpGet]
         [Route("api/Valot/{id}")]
-        public IEnumerable<Valot> Valot(int id)
+        public List<Valot> Valot(int id)
         {
             MobiilikantaContext db = new MobiilikantaContext();
-            IEnumerable<Valot> valot = (from v in db.Valot
-                                        where v.TaloId == id
-                                        orderby v.ValoId ascending
-                                        select v).ToList();
+            List<Valot> valot = (from v in db.Valot
+                                 where v.TaloId == id
+                                 select v).ToList();
             db.Dispose();
             return valot;
         }
 
         [HttpGet]
         [Route("api/Saunat/{id}")]
-        public IEnumerable<Saunat> Saunat(int id)
+        public List<Saunat> Saunat(int id)
         {
             MobiilikantaContext db = new MobiilikantaContext();
-            IEnumerable<Saunat> saunat = (from s in db.Saunat
-                                          where s.TaloId == id
-                                          orderby s.SaunaId ascending
-                                          select s).ToList();
+            List<Saunat> saunat = (from s in db.Saunat
+                                   where s.TaloId == id
+                                   select s).ToList();
             db.Dispose();
             return saunat;
         }
@@ -68,17 +64,14 @@ namespace WebApplication3.Controllers
         {
             bool OK = false;
             MobiilikantaContext db = new MobiilikantaContext();
-            TalonTiedot dbItem = (from c in db.TalonTiedot
-                                  where c.TaloId == tiedot.TaloId
-                                  select c).FirstOrDefault();
-
+            TalonTiedot dbItem = db.TalonTiedot.Find(tiedot.TaloId);
             if (dbItem != null)
             {
-                if (tiedot.TalonTavoitelampotila != null)
+                if (tiedot.TalonTavoitelampotila != null) // jos frontista tulee arvo, niin päivitetään se kantaan
                 {
                     dbItem.TalonTavoitelampotila = tiedot.TalonTavoitelampotila;
                 }
-                else
+                else // jos frontista ei tule arvoa, niin "tarkistetaan" (eli asetetaan nykylämpö samaksi kuin tavoite)
                 {
                     dbItem.TalonNykylampotila = dbItem.TalonTavoitelampotila;
                     dbItem.Mittaushetki = DateTime.Now;
@@ -86,7 +79,6 @@ namespace WebApplication3.Controllers
                 db.SaveChanges();
                 OK = true;
             }
-
             db.Dispose();
             return OK;
         }
@@ -94,7 +86,7 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [Route("api/MuutaValonTilaa")]
 
-        public bool MuokkaaValoa(Valot uusi)
+        public bool MuutaValonTilaa(Valot uusi)
         {
             bool OK = false;
             MobiilikantaContext db = new MobiilikantaContext();
@@ -107,13 +99,61 @@ namespace WebApplication3.Controllers
                 db.SaveChanges();
                 OK = true;
             }
-
             finally
             {
                 db.Dispose();
             }
             return OK;
+        }
 
+        [HttpPost]
+        [Route("api/MuutaSaunanTilaa")]
+
+        public bool MuokkaaSaunaa(Saunat uusi)
+        {
+            bool OK = false;
+            MobiilikantaContext db = new MobiilikantaContext();
+
+            Saunat sauna = db.Saunat.Find(uusi.SaunaId);
+
+            sauna.SaunanTila = uusi.SaunanTila;
+            try
+            {
+                db.Entry(sauna).State = EntityState.Modified;
+                db.SaveChanges();
+                OK = true;
+            }
+            finally
+            {
+                db.Dispose();
+            }
+            return OK;
+        }
+
+        [HttpGet]
+        [Route("api/MittaaSauna/{id}")]
+        public int? MittaaSauna(int id)
+        {
+            MobiilikantaContext db = new MobiilikantaContext();
+            Saunat sauna = db.Saunat.Find(id);
+            if (sauna.SaunanTila)
+            {
+                sauna.SaunanNykylampotila = 90;
+            }
+            else
+            {
+                sauna.SaunanNykylampotila = 22;
+            }
+            try
+            {
+                db.Entry(sauna).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            finally
+            {
+                db.Dispose();
+            }
+            return sauna.SaunanNykylampotila;
         }
     }
 }

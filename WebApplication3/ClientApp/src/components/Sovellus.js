@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
-export class Talot extends Component {
-    displayName = Talot.name
+export class Sovellus extends Component {
+    displayName = Sovellus.name
 
     constructor(props) {
         super(props);
@@ -47,15 +47,13 @@ export class Talot extends Component {
 
     renderTalot() {
         return (
-            <div>
-                <div className='btn-group btn-group-justified'>
-                    {this.state.talot.map(x => (
-                        <div className="btn-group" key={x.taloId}>
-                            <button type="button" className={this.talonapinVari(x.taloId)} onClick={this.talonValinta(x.taloId)}>{x.talonNimi}</button>
-                        </div>
-                    )
-                    )}
-                </div>
+            <div className='btn-group btn-group-justified'>
+                {this.state.talot.map(x => (
+                    <div className="btn-group" key={x.taloId}>
+                        <button type="button" className={this.talonapinVari(x.taloId)} onClick={this.talonValinta(x.taloId)}>{x.talonNimi}</button>
+                    </div>
+                )
+                )}
             </div>
         );
     }
@@ -74,7 +72,6 @@ export class Talot extends Component {
                     talonTiedot: x.data,
                     loadingTalonTiedot: false
                 });
-
             });
 
         axios
@@ -91,7 +88,7 @@ export class Talot extends Component {
         axios
             .get('api/Saunat/' + id)
             .then(x => {
-                console.log(x.data);
+                //console.log(x.data);
                 this.setState({
                     talonSaunat: x.data,
                     loadingTalonSaunat: false
@@ -135,8 +132,8 @@ export class Talot extends Component {
                 <br />
                 <h2>Talon tiedot</h2>
                 <h4>Nykylampotila: {this.state.talonTiedot.talonNykylampotila} &deg;C &nbsp;
-                <button className="btn btn-sm" onClick={this.handleTalonMittaus()}>Mittaa</button></h4>
-                <h4>Tavoitelampotila: {this.state.talonTiedot.talonTavoitelampotila} &deg;C</h4>
+                <button className="btn btn-sm" onClick={this.handleTalonMittaus()}>Tarkista</button></h4>
+                <h4 className="erikoistapaus">Tavoitelampotila: {this.state.talonTiedot.talonTavoitelampotila} &deg;C</h4>
                 <input onChange={this.handleSlider} type="range" min="14" max="28" value={this.state.talonTiedot.talonTavoitelampotila} step="1" />
             </div>
         );
@@ -157,7 +154,7 @@ export class Talot extends Component {
     }
 
     handleValonapinKlikkaus = (id, value) => () => {
-        console.log(this.state.talonValot);
+        //console.log(this.state.talonValot);
         const apu = this.state.talonValot.find(x => x.valoId === id);
         const data = { ...apu, valonMaara: value };
         const url = 'api/MuutaValonTilaa?valoId=' + data.valoId + '&valonMaara=' + data.valonMaara;
@@ -184,7 +181,7 @@ export class Talot extends Component {
     renderValo = ({ valo }) => {
         return (
             <div>
-                <h4>{valo.valonNimi} {valo.valonMaara}</h4>
+                <h4>{valo.valonNimi}</h4>
                 <div className='btn-group btn-group-justified'>
                     <this.renderValoNappi value='0' nimi='Pois' id={valo.valoId} />
                     <this.renderValoNappi value='33' nimi='Himmea' id={valo.valoId} />
@@ -208,28 +205,40 @@ export class Talot extends Component {
 
     // SAUNOJEN RENDERÖINTI JA NAPPIEN KLIKKAILU
 
-    handleSaunanapinKlikkaus = (id, nimi) => () => {
+    handleSaunanMittaus = (id) => () => {
+        const apu = this.state.talonSaunat.find(x => x.saunaId === id);
+        //console.log(apu);
+        axios
+            .get('api/MittaaSauna/' + id)
+            .then(x => {
+                //console.log(x);
+                const apu2 = { ...apu, saunanNykylampotila: x.data };
+                //console.log(apu2);
+                this.setState({
+                    talonSaunat: this.state.talonSaunat.map(x => x.saunaId !== id ? x : apu2)
+                });
+            });
+    }
 
+    handleSaunanapinKlikkaus = (id, nimi) => () => {
         const apu = this.state.talonSaunat.find(x => x.saunaId === id);
         let apu2 = false;
         if (nimi === "Paalla") {
             apu2 = true;
         }
         const data = { ...apu, saunanTila: apu2 };
-        this.setState({
-            talonSaunat: this.state.talonSaunat.map(x => x.saunaId !== id ? x : data)
-        });
+
         //console.log(apu);
-        //const url = 'api/MuutaValonTilaa?valoId=' + data.valoId + '&valonMaara=' + data.valonMaara;
-        //axios
-        //    .post(url)
-        //    .then(x => {
-        //        if (x) {
-        //            this.setState({
-        //                talonValot: this.state.talonValot.map(x => x.valoId !== id ? x : data)
-        //            });
-        //        }
-        //    });
+        const url = 'api/MuutaSaunanTilaa?saunaId=' + data.saunaId + '&saunanTila=' + apu2;
+        axios
+            .post(url)
+            .then(x => {
+                if (x) {
+                    this.setState({
+                        talonSaunat: this.state.talonSaunat.map(x => x.saunaId !== id ? x : data)
+                    });
+                }
+            });
     }
 
     saunanapinVari = (id, nimi) => {
@@ -246,8 +255,7 @@ export class Talot extends Component {
             return 'btn';
         }
     }
-
-
+    
     renderSaunaNappi = (props) => {
         return (
             <div className="btn-group">
@@ -255,12 +263,12 @@ export class Talot extends Component {
             </div>
         );
     }
-
-
+    
     renderSauna = ({ sauna }) => {
         return (
             <div>
-                <h4>{sauna.saunanNimi} {sauna.saunanNykylampotila}</h4>
+                <h4>{sauna.saunanNimi} {sauna.saunanNykylampotila}&deg;C &nbsp;
+                <button className="btn btn-sm" onClick={this.handleSaunanMittaus(sauna.saunaId)}>Tarkista</button></h4>
                 <div className='btn-group btn-group-justified'>
                     <this.renderSaunaNappi nimi='Pois' id={sauna.saunaId} />
                     <this.renderSaunaNappi nimi='Paalla' id={sauna.saunaId} />
@@ -284,17 +292,10 @@ export class Talot extends Component {
     // KOKO SIVUN RENDERÖINTI
 
     render() {
-
-        //let contentsTalot = this.state.loadingTalot
-        //    ? <p><em>Loading...</em></p>
-        //    : this.renderTalot();
-
         let contentsTalonTiedot = this.state.loadingTalonTiedot
             ? null : this.renderTalonTiedot();
-
         let contentsTalonValot = this.state.loadingTalonValot
             ? null : this.renderTalonValot();
-
         let contentsTalonSaunat = this.state.loadingTalonSaunat
             ? null : this.renderTalonSaunat();
 
