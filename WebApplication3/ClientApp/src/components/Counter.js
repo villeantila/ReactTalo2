@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 
 export class Counter extends Component {
     displayName = Counter.name
@@ -7,38 +6,17 @@ export class Counter extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentCount: 0,
-            talonTiedot: []
-
+            currentCount: 0
         };
 
-        this.incrementCounter = this.incrementCounter.bind(this);
+        //this.incrementCounter = this.incrementCounter.bind(this);
     }
 
-    incrementCounter() {
+    incrementCounter = () => {
         this.setState({
             currentCount: this.state.currentCount + 1
         });
-        const id = 11;
-        axios
-            .get('api/TalonTiedot/' + id)
-            .then(x => {
-                //console.log(x.data);
-                this.setState({
-                    talonTiedot: x.data
-                });
-            });
 
-        const taloId = 11;
-        const talonTavoitelampotila = 28;
-        let url = 'api/Talot/Muokkaa?taloId=' + taloId + '&talonTavoitelampotila=' + talonTavoitelampotila;
-        console.log(url);
-        axios
-            .post(url)
-            .then(x => {
-
-                //console.log(x);
-            });
     }
 
     render() {
