@@ -92,19 +92,22 @@ export class Sovellus extends Component {
 
     handleSlider = (event) => {
         const data = { ...this.state.talonTiedot, talonTavoitelampotila: parseInt(event.target.value, 10) };
+        this.setState({ talonTiedot: data });
+    }
+
+    handleSliderMouseUp = () => {
+        const data = this.state.talonTiedot;
         const url = 'api/MuutaTalonTietoja?taloId=' + data.taloId + '&talonTavoitelampotila=' + data.talonTavoitelampotila;
         axios
             .post(url)
             //.post('api/MuutaTalonTietoja', data) <-- tämä ei jostain syystä toimi, lähetetään tiedot perinteisesti
             .then(x => {
             });
-        this.setState({ talonTiedot: data });
     }
 
     handleTalonMittaus = () => () => {
         const value = this.state.talonTiedot.talonTavoitelampotila;
         const data = { ...this.state.talonTiedot, talonNykylampotila: value };
-        //console.log(data);
         const url = 'api/MuutaTalonTietoja?taloId=' + data.taloId;
         axios
             .post(url)
@@ -121,7 +124,7 @@ export class Sovellus extends Component {
                 <h4>Nykylampotila: {this.state.talonTiedot.talonNykylampotila} &deg;C &nbsp;
                 <button className="btn btn-sm" onClick={this.handleTalonMittaus()}>Tarkista</button></h4>
                 <h4 className="erikoistapaus">Tavoitelampotila: {this.state.talonTiedot.talonTavoitelampotila} &deg;C</h4>
-                <input onChange={this.handleSlider} type="range" min="14" max="28" value={this.state.talonTiedot.talonTavoitelampotila} step="1" />
+                <input onMouseUp={this.handleSliderMouseUp} onChange={this.handleSlider} type="range" min="14" max="28" value={this.state.talonTiedot.talonTavoitelampotila} step="1" />
             </div>
         );
     }
@@ -202,13 +205,9 @@ export class Sovellus extends Component {
             });
     }
 
-    saunanapinVari = (id, nimi) => {
+    saunanapinVari = (id, tila) => {
         const apu = this.state.talonSaunat.find(x => x.saunaId === id).saunanTila;
-        let apu2 = false;
-        if (nimi === "Paalla") {
-            apu2 = true;
-        }
-        if (apu === apu2) {
+        if (apu === tila) {
             return 'btn btn-danger';
         }
         else {
@@ -216,16 +215,10 @@ export class Sovellus extends Component {
         }
     }
 
-    handleSaunanapinKlikkaus = (id, nimi) => () => {
+    handleSaunanapinKlikkaus = (id, tila) => () => {
         const apu = this.state.talonSaunat.find(x => x.saunaId === id);
-        let apu2 = false;
-        if (nimi === "Paalla") {
-            apu2 = true;
-        }
-        const data = { ...apu, saunanTila: apu2 };
-
-        //console.log(apu);
-        const url = 'api/MuutaSaunanTilaa?saunaId=' + data.saunaId + '&saunanTila=' + apu2;
+        const data = { ...apu, saunanTila: tila };
+        const url = 'api/MuutaSaunanTilaa?saunaId=' + data.saunaId + '&saunanTila=' + tila;
         axios
             .post(url)
             .then(x => {
@@ -237,12 +230,11 @@ export class Sovellus extends Component {
             });
     }
 
-    renderSaunaNappi = ({ id, nimi }) => {
-        //const nimi = tila ? 'Paalla' : 'Pois';
-        console.log(id, nimi);
+    renderSaunaNappi = ({ id, tila }) => {
+        const nimi = tila ? 'Paalla' : 'Pois';
         return (
             <div className="btn-group">
-                <button type="button" className={this.saunanapinVari(id, nimi)} onClick={this.handleSaunanapinKlikkaus(id, nimi)}>{nimi}</button>
+                <button type="button" className={this.saunanapinVari(id, tila)} onClick={this.handleSaunanapinKlikkaus(id, tila)}>{nimi}</button>
             </div>
         );
     }
@@ -250,11 +242,11 @@ export class Sovellus extends Component {
     renderSauna = ({ sauna }) => {
         return (
             <div>
-                <h4>{sauna.saunanNimi} {sauna.saunanNykylampotila}&deg;C &nbsp;
+                <h4>{sauna.saunanNimi} {sauna.saunanNykylampotila} &deg;C &nbsp;
                 <button className="btn btn-sm" onClick={this.handleSaunanMittaus(sauna.saunaId)}>Tarkista</button></h4>
                 <div className='btn-group btn-group-justified'>
-                    <this.renderSaunaNappi nimi='Pois' id={sauna.saunaId} />
-                    <this.renderSaunaNappi nimi='Paalla' id={sauna.saunaId} />
+                    <this.renderSaunaNappi tila={false} id={sauna.saunaId} />
+                    <this.renderSaunaNappi tila id={sauna.saunaId} />
                 </div>
             </div>
         );
