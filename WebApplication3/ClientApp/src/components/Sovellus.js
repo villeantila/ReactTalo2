@@ -8,20 +8,16 @@ export class Sovellus extends Component {
         super(props);
         this.state = {
             talot: [],
-
             talonTiedot: [],
             loadingTalonTiedot: true,
-
             talonValot: [],
             loadingTalonValot: true,
-
             talonSaunat: [],
             loadingTalonSaunat: true
         };
     }
 
     componentDidMount() {
-        //console.log('component did mount');
         axios
             .get('api/Talot')
             .then(x => {
@@ -32,15 +28,6 @@ export class Sovellus extends Component {
     }
 
     //TALOJEN LISTAUS
-
-    talonapinVari = (id) => {
-        if (this.state.talonTiedot.taloId === id) {
-            return 'btn btn-primary btn-lg';
-        }
-        else {
-            return 'btn btn-lg';
-        }
-    }
 
     renderTalot() {
         return (
@@ -55,6 +42,14 @@ export class Sovellus extends Component {
         );
     }
 
+    talonapinVari = (id) => {
+        if (this.state.talonTiedot.taloId === id) {
+            return 'btn btn-primary btn-lg';
+        }
+        else {
+            return 'btn btn-lg';
+        }
+    }
 
     //TALON TIETOJEN HAKEMINEN: LÄMPÖTILAT, VALOT, SAUNAT
 
@@ -87,12 +82,23 @@ export class Sovellus extends Component {
             });
     };
 
-
     // TALON TIETOJEN RENDERÖINTI JA SLIDERIN SÄÄTÖ 
 
+    renderTalonTiedot() {
+        return (
+            <div key={this.state.talonTiedot.taloId}>
+                <h2>Talon tiedot</h2>
+                <h4>Nykylämpötila: {this.state.talonTiedot.talonNykylampotila} &deg;C &nbsp;
+                <button className="btn btn-xs" onClick={this.handleTalonTarkistus()}>Tarkista</button></h4>
+                <h4 className="erikoistapaus">Tavoitelämpötila: {this.state.talonTiedot.talonTavoitelampotila} &deg;C</h4>
+                <input onMouseUp={this.handleSliderMouseUp} onChange={this.handleSlider} type="range" min="14" max="28" value={this.state.talonTiedot.talonTavoitelampotila} step="1" />
+            </div>
+        );
+    }
+
     handleSlider = (event) => {
-        const data = { ...this.state.talonTiedot, talonTavoitelampotila: parseInt(event.target.value, 10) };
-        this.setState({ talonTiedot: data });
+        const apu = { ...this.state.talonTiedot, talonTavoitelampotila: parseInt(event.target.value, 10) };
+        this.setState({ talonTiedot: apu });
     }
 
     handleSliderMouseUp = () => {
@@ -105,9 +111,9 @@ export class Sovellus extends Component {
             });
     }
 
-    handleTalonMittaus = () => () => {
-        const value = this.state.talonTiedot.talonTavoitelampotila;
-        const data = { ...this.state.talonTiedot, talonNykylampotila: value };
+    handleTalonTarkistus = () => () => {
+        const apu = this.state.talonTiedot.talonTavoitelampotila;
+        const data = { ...this.state.talonTiedot, talonNykylampotila: apu };
         const url = 'api/MuutaTalonTietoja?taloId=' + data.taloId;
         axios
             .post(url)
@@ -115,21 +121,41 @@ export class Sovellus extends Component {
                 this.setState({ talonTiedot: data });
             });
     }
+    
+    // VALOJEN RENDERÖINTI JA NAPPIEN KLIKKAILU
 
-    renderTalonTiedot() {
+    renderTalonValot() {
         return (
-            <div key={this.state.talonTiedot.taloId}>
-                <br />
-                <h2>Talon tiedot</h2>
-                <h4>Nykylampotila: {this.state.talonTiedot.talonNykylampotila} &deg;C &nbsp;
-                <button className="btn btn-sm" onClick={this.handleTalonMittaus()}>Tarkista</button></h4>
-                <h4 className="erikoistapaus">Tavoitelampotila: {this.state.talonTiedot.talonTavoitelampotila} &deg;C</h4>
-                <input onMouseUp={this.handleSliderMouseUp} onChange={this.handleSlider} type="range" min="14" max="28" value={this.state.talonTiedot.talonTavoitelampotila} step="1" />
+            <div>
+                <h3>Huoneiden valaistus</h3>
+                {this.state.talonValot.map(x =>
+                    <this.renderValo key={x.valoId} valo={x} />
+                )}
             </div>
         );
     }
 
-    // VALOJEN RENDERÖINTI JA NAPPIEN KLIKKAILU
+    renderValo = ({ valo }) => {
+        return (
+            <div>
+                <h4>{valo.valonNimi}</h4>
+                <div className='btn-group btn-group-justified'>
+                    <this.renderValoNappi value='0' nimi='Pois' id={valo.valoId} />
+                    <this.renderValoNappi value='33' nimi='Himmeä' id={valo.valoId} />
+                    <this.renderValoNappi value='66' nimi='Puolivalot' id={valo.valoId} />
+                    <this.renderValoNappi value='100' nimi='Kirkas' id={valo.valoId} />
+                </div>
+            </div>
+        );
+    }
+
+    renderValoNappi = ({ id, value, nimi }) => {
+        return (
+            <div className="btn-group">
+                <button type="button" className={this.valonapinVari(id, value)} onClick={this.handleValonapinKlikkaus(id, value)}>{nimi}</button>
+            </div>
+        );
+    }
 
     valonapinVari = (id, value) => {
         const apu = parseInt(this.state.talonValot.find(x => x.valoId === id).valonMaara, 10);
@@ -156,53 +182,40 @@ export class Sovellus extends Component {
             });
     }
 
-    renderValoNappi = (props) => {
-        return (
-            <div className="btn-group">
-                <button type="button" className={this.valonapinVari(props.id, props.value)} onClick={this.handleValonapinKlikkaus(props.id, props.value)}>{props.nimi}</button>
-            </div>
-        );
-    }
 
+    // SAUNOJEN RENDERÖINTI JA NAPPIEN KLIKKAILU
 
-    renderValo = ({ valo }) => {
+    renderTalonSaunat() {
         return (
             <div>
-                <h4>{valo.valonNimi}</h4>
-                <div className='btn-group btn-group-justified'>
-                    <this.renderValoNappi value='0' nimi='Pois' id={valo.valoId} />
-                    <this.renderValoNappi value='33' nimi='Himmea' id={valo.valoId} />
-                    <this.renderValoNappi value='66' nimi='Puolivalot' id={valo.valoId} />
-                    <this.renderValoNappi value='100' nimi='Kirkas' id={valo.valoId} />
-                </div>
-            </div>
-        );
-    }
-
-    renderTalonValot() {
-        return (
-            <div>
-                <h3>Huoneiden valaistus</h3>
-                {this.state.talonValot.map(x =>
-                    <this.renderValo key={x.valoId} valo={x} />
+                <h3>Saunat</h3>
+                {this.state.talonSaunat.map(x =>
+                    <this.renderSauna key={x.saunaId} sauna={x} />
                 )}
             </div>
         );
     }
 
+    renderSauna = ({ sauna }) => {
+        return (
+            <div>
+                <h4>{sauna.saunanNimi} {sauna.saunanNykylampotila} &deg;C &nbsp;
+                <button className="btn btn-xs" onClick={this.handleSaunanMittaus(sauna.saunaId)}>Tarkista</button></h4>
+                <div className='btn-group btn-group-justified'>
+                    <this.renderSaunaNappi tila={false} id={sauna.saunaId} />
+                    <this.renderSaunaNappi tila id={sauna.saunaId} />
+                </div>
+            </div>
+        );
+    }
 
-    // SAUNOJEN RENDERÖINTI JA NAPPIEN KLIKKAILU
-
-    handleSaunanMittaus = (id) => () => {
-        const apu = this.state.talonSaunat.find(x => x.saunaId === id);
-        axios
-            .get('api/MittaaSauna/' + id)
-            .then(x => {
-                const apu2 = { ...apu, saunanNykylampotila: x.data };
-                this.setState({
-                    talonSaunat: this.state.talonSaunat.map(x => x.saunaId !== id ? x : apu2)
-                });
-            });
+    renderSaunaNappi = ({ id, tila }) => {
+        const nimi = tila ? 'Päällä' : 'Pois';
+        return (
+            <div className="btn-group">
+                <button type="button" className={this.saunanapinVari(id, tila)} onClick={this.handleSaunanapinKlikkaus(id, tila)}>{nimi}</button>
+            </div>
+        );
     }
 
     saunanapinVari = (id, tila) => {
@@ -230,39 +243,17 @@ export class Sovellus extends Component {
             });
     }
 
-    renderSaunaNappi = ({ id, tila }) => {
-        const nimi = tila ? 'Paalla' : 'Pois';
-        return (
-            <div className="btn-group">
-                <button type="button" className={this.saunanapinVari(id, tila)} onClick={this.handleSaunanapinKlikkaus(id, tila)}>{nimi}</button>
-            </div>
-        );
+    handleSaunanMittaus = (id) => () => {
+        const apu = this.state.talonSaunat.find(x => x.saunaId === id);
+        axios
+            .get('api/MittaaSauna/' + id)
+            .then(x => {
+                const data = { ...apu, saunanNykylampotila: x.data };
+                this.setState({
+                    talonSaunat: this.state.talonSaunat.map(x => x.saunaId !== id ? x : data)
+                });
+            });
     }
-
-    renderSauna = ({ sauna }) => {
-        return (
-            <div>
-                <h4>{sauna.saunanNimi} {sauna.saunanNykylampotila} &deg;C &nbsp;
-                <button className="btn btn-sm" onClick={this.handleSaunanMittaus(sauna.saunaId)}>Tarkista</button></h4>
-                <div className='btn-group btn-group-justified'>
-                    <this.renderSaunaNappi tila={false} id={sauna.saunaId} />
-                    <this.renderSaunaNappi tila id={sauna.saunaId} />
-                </div>
-            </div>
-        );
-    }
-
-    renderTalonSaunat() {
-        return (
-            <div>
-                <h3>Saunat</h3>
-                {this.state.talonSaunat.map(x =>
-                    <this.renderSauna key={x.saunaId} sauna={x} />
-                )}
-            </div>
-        );
-    }
-
 
     // KOKO SIVUN RENDERÖINTI
 

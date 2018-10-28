@@ -137,19 +137,18 @@ namespace WebApplication3.Controllers
             MobiilikantaContext db = new MobiilikantaContext();
             Saunat sauna = db.Saunat.Find(id);
             Random rand = new Random();
-            if (sauna.SaunanTila)
-            {
-                sauna.SaunanNykylampotila = rand.Next(80, 91); 
-            }
-            else
-            {
-                sauna.SaunanNykylampotila = rand.Next(18, 25);
-            }
-
-            sauna.Mittaushetki = DateTime.Now;
 
             try
             {
+                if (sauna.SaunanTila)
+                {
+                    sauna.SaunanNykylampotila = rand.Next(80, 91);
+                }
+                else
+                {
+                    sauna.SaunanNykylampotila = rand.Next(18, 25);
+                }
+                sauna.Mittaushetki = DateTime.Now;
                 db.Entry(sauna).State = EntityState.Modified;
                 db.SaveChanges();
             }
