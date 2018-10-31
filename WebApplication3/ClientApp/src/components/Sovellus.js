@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+ï»¿import React, { Component } from 'react';
 import axios from 'axios';
 
 export class Sovellus extends Component {
@@ -51,9 +51,9 @@ export class Sovellus extends Component {
         }
     }
 
-    //TALON TIETOJEN HAKEMINEN: LÄMPÖTILAT, VALOT, SAUNAT
+    //TALON TIETOJEN HAKEMINEN: LÃ„MPÃ–TILAT, VALOT, SAUNAT
 
-    talonValinta = (id) => () => {
+    talonValinta = (id) => () => {   
         axios
             .get('api/TalonTiedot/' + id)
             .then(x => {
@@ -82,15 +82,15 @@ export class Sovellus extends Component {
             });
     };
 
-    // TALON TIETOJEN RENDERÖINTI JA SLIDERIN SÄÄTÖ 
+    // TALON TIETOJEN RENDERÃ–INTI JA SLIDERIN SÃ„Ã„TÃ– 
 
     renderTalonTiedot() {
         return (
             <div key={this.state.talonTiedot.taloId}>
                 <h2>Talon tiedot</h2>
-                <h4>Nykylämpötila: {this.state.talonTiedot.talonNykylampotila} &deg;C &nbsp;
+                <h4>NykylÃ¤mpÃ¶tila: {this.state.talonTiedot.talonNykylampotila} &deg;C &nbsp;
                 <button className="btn btn-xs" onClick={this.handleTalonTarkistus()}>Tarkista</button></h4>
-                <h4 className="erikoistapaus">Tavoitelämpötila: {this.state.talonTiedot.talonTavoitelampotila} &deg;C</h4>
+                <h4 className="erikoistapaus">TavoitelÃ¤mpÃ¶tila: {this.state.talonTiedot.talonTavoitelampotila} &deg;C</h4>
                 <input onMouseUp={this.handleSliderMouseUp} onChange={this.handleSlider} type="range" min="14" max="28" value={this.state.talonTiedot.talonTavoitelampotila} step="1" />
             </div>
         );
@@ -106,7 +106,7 @@ export class Sovellus extends Component {
         const url = 'api/MuutaTalonTietoja?taloId=' + data.taloId + '&talonTavoitelampotila=' + data.talonTavoitelampotila;
         axios
             .post(url)
-            //.post('api/MuutaTalonTietoja', data) <-- tämä ei jostain syystä toimi, lähetetään tiedot perinteisesti
+            //.post('api/MuutaTalonTietoja', data) <-- tÃ¤mÃ¤ ei jostain syystÃ¤ toimi, lÃ¤hetetÃ¤Ã¤n tiedot perinteisesti
             .then(x => {
             });
     }
@@ -122,7 +122,7 @@ export class Sovellus extends Component {
             });
     }
     
-    // VALOJEN RENDERÖINTI JA NAPPIEN KLIKKAILU
+    // VALOJEN RENDERÃ–INTI JA NAPPIEN KLIKKAILU
 
     renderTalonValot() {
         return (
@@ -141,7 +141,7 @@ export class Sovellus extends Component {
                 <h4>{valo.valonNimi}</h4>
                 <div className='btn-group btn-group-justified'>
                     <this.renderValoNappi value='0' nimi='Pois' id={valo.valoId} />
-                    <this.renderValoNappi value='33' nimi='Himmeä' id={valo.valoId} />
+                    <this.renderValoNappi value='33' nimi='HimmeÃ¤' id={valo.valoId} />
                     <this.renderValoNappi value='66' nimi='Puolivalot' id={valo.valoId} />
                     <this.renderValoNappi value='100' nimi='Kirkas' id={valo.valoId} />
                 </div>
@@ -182,8 +182,7 @@ export class Sovellus extends Component {
             });
     }
 
-
-    // SAUNOJEN RENDERÖINTI JA NAPPIEN KLIKKAILU
+    // SAUNOJEN RENDERÃ–INTI JA NAPPIEN KLIKKAILU
 
     renderTalonSaunat() {
         return (
@@ -210,7 +209,7 @@ export class Sovellus extends Component {
     }
 
     renderSaunaNappi = ({ id, tila }) => {
-        const nimi = tila ? 'Päällä' : 'Pois';
+        const nimi = tila ? 'PÃ¤Ã¤llÃ¤' : 'Pois';
         return (
             <div className="btn-group">
                 <button type="button" className={this.saunanapinVari(id, tila)} onClick={this.handleSaunanapinKlikkaus(id, tila)}>{nimi}</button>
@@ -231,7 +230,7 @@ export class Sovellus extends Component {
     handleSaunanapinKlikkaus = (id, tila) => () => {
         const apu = this.state.talonSaunat.find(x => x.saunaId === id);
         const data = { ...apu, saunanTila: tila };
-        const url = 'api/MuutaSaunanTilaa?saunaId=' + data.saunaId + '&saunanTila=' + tila;
+        const url = 'api/MuutaSaunanTilaa?saunaId=' + id + '&saunanTila=' + tila;
         axios
             .post(url)
             .then(x => {
@@ -255,7 +254,7 @@ export class Sovellus extends Component {
             });
     }
 
-    // KOKO SIVUN RENDERÖINTI
+    // KOKO SIVUN RENDERÃ–INTI
 
     render() {
         let contentsTalonTiedot = this.state.loadingTalonTiedot
