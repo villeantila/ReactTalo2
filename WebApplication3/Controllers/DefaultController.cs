@@ -90,9 +90,9 @@ namespace WebApplication3.Controllers
         {
             bool OK = false;
             MobiilikantaContext db = new MobiilikantaContext();
-
             Valot valo = db.Valot.Find(uusi.ValoId);
             valo.ValonMaara = uusi.ValonMaara;
+
             try
             {
                 db.Entry(valo).State = EntityState.Modified;
@@ -113,10 +113,9 @@ namespace WebApplication3.Controllers
         {
             bool OK = false;
             MobiilikantaContext db = new MobiilikantaContext();
-
             Saunat sauna = db.Saunat.Find(uusi.SaunaId);
-
             sauna.SaunanTila = uusi.SaunanTila;
+
             try
             {
                 db.Entry(sauna).State = EntityState.Modified;

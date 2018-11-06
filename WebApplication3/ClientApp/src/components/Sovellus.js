@@ -140,7 +140,7 @@ export class Sovellus extends Component {
             <div>
                 <h4>{valo.valonNimi}</h4>
                 <div className='btn-group btn-group-justified'>
-                    <this.renderValoNappi value='0' nimi='Pois' id={valo.valoId} />
+                    <this.renderValoNappi value='0' nimi='Pois' id={valo.valoId} />           
                     <this.renderValoNappi value='33' nimi='Himmeä' id={valo.valoId} />
                     <this.renderValoNappi value='66' nimi='Puolivalot' id={valo.valoId} />
                     <this.renderValoNappi value='100' nimi='Kirkas' id={valo.valoId} />

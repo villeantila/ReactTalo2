@@ -10,9 +10,9 @@
     background-color: #4189C7;
     color: white;
 }
-
+/*
 @media (min-width: 768px) {
-    /* On large screens, convert the nav menu to a vertical sidebar */
+    /* On large screens, convert the nav menu to a vertical sidebar 
     .navbar {
         height: 100%;
         width: calc(25% - 20px);
@@ -49,10 +49,10 @@
         border-radius: 4px;
     }
     .navbar a {
-        /* If a menu item's text is too long, truncate it */
+        /* If a menu item's text is too long, truncate it 
         width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
-}
+} */

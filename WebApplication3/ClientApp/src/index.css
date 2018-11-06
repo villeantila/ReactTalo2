@@ -6,7 +6,10 @@
 }
 
 body {
+    padding-top: 0;
     padding-bottom: 50px;
+    min-width: 450px;
+    max-width: 768px;
 }
 
 h2 {
@@ -15,7 +18,7 @@ h2 {
 
 h3 {
     margin-top: 30px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 h4 {
