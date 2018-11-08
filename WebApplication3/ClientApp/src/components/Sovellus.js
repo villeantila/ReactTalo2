@@ -140,7 +140,7 @@ export class Sovellus extends Component {
             <div>
                 <h4>{valo.valonNimi}</h4>
                 <div className='btn-group btn-group-justified'>
-                    <this.renderValoNappi value='0' nimi='Pois' id={valo.valoId} />           
+                    <this.renderValoNappi value='0' nimi='Pois' id={valo.valoId} />
                     <this.renderValoNappi value='33' nimi='Himmeä' id={valo.valoId} />
                     <this.renderValoNappi value='66' nimi='Puolivalot' id={valo.valoId} />
                     <this.renderValoNappi value='100' nimi='Kirkas' id={valo.valoId} />
@@ -174,7 +174,7 @@ export class Sovellus extends Component {
         axios
             .post(url)
             .then(x => {
-                if (x) {
+                if (x.data) {
                     this.setState({
                         talonValot: this.state.talonValot.map(x => x.valoId !== id ? x : data)
                     });
@@ -234,7 +234,7 @@ export class Sovellus extends Component {
         axios
             .post(url)
             .then(x => {
-                if (x) {
+                if (x.data) {
                     this.setState({
                         talonSaunat: this.state.talonSaunat.map(x => x.saunaId !== id ? x : data)
                     });

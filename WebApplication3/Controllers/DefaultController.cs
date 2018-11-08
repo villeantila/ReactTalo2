@@ -91,7 +91,11 @@ namespace WebApplication3.Controllers
             bool OK = false;
             MobiilikantaContext db = new MobiilikantaContext();
             Valot valo = db.Valot.Find(uusi.ValoId);
+
             valo.ValonMaara = uusi.ValonMaara;
+            valo.ValonTila = true;
+            if (uusi.ValonMaara == 0)
+                valo.ValonTila = false;
 
             try
             {
