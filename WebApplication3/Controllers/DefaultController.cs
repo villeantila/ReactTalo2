@@ -28,7 +28,7 @@ namespace WebApplication3.Controllers
         public TalonTiedot TalonTiedot(int id)
         {
             MobiilikantaContext db = new MobiilikantaContext();
-            TalonTiedot tiedot = db.TalonTiedot.Find(id);
+            TalonTiedot tiedot = db.TalonTiedot.FirstOrDefault((t) => t.TaloId == id);
             db.Dispose();
             return tiedot;
         }
@@ -38,9 +38,7 @@ namespace WebApplication3.Controllers
         public List<Valot> Valot(int id)
         {
             MobiilikantaContext db = new MobiilikantaContext();
-            List<Valot> valot = (from v in db.Valot
-                                 where v.TaloId == id
-                                 select v).ToList();
+            List<Valot> valot = db.Valot.Where((v) => v.TaloId == id).ToList();
             db.Dispose();
             return valot;
         }
@@ -50,9 +48,7 @@ namespace WebApplication3.Controllers
         public List<Saunat> Saunat(int id)
         {
             MobiilikantaContext db = new MobiilikantaContext();
-            List<Saunat> saunat = (from s in db.Saunat
-                                   where s.TaloId == id
-                                   select s).ToList();
+            List<Saunat> saunat = db.Saunat.Where((s) => s.TaloId == id).ToList();
             db.Dispose();
             return saunat;
         }
@@ -60,21 +56,21 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [Route("api/MuutaTalonTietoja")]
 
-        public bool MuutaTalonTietoja(TalonTiedot tiedot)
+        public bool MuutaTalonTietoja(TalonTiedot uusi)
         {
             bool OK = false;
             MobiilikantaContext db = new MobiilikantaContext();
-            TalonTiedot dbItem = db.TalonTiedot.Find(tiedot.TaloId);
-            if (dbItem != null)
+            TalonTiedot tiedot = db.TalonTiedot.FirstOrDefault((t) => t.TaloId == uusi.TaloId);
+            if (tiedot != null)
             {
-                if (tiedot.TalonTavoitelampotila != null) // jos frontista tulee arvo, niin päivitetään se kantaan
+                if (uusi.TalonTavoitelampotila != null) // jos frontista tulee arvo, niin päivitetään se kantaan
                 {
-                    dbItem.TalonTavoitelampotila = tiedot.TalonTavoitelampotila;
+                    tiedot.TalonTavoitelampotila = uusi.TalonTavoitelampotila;
                 }
                 else // jos frontista ei tule arvoa, niin "tarkistetaan" (eli asetetaan nykylämpö samaksi kuin tavoite)
                 {
-                    dbItem.TalonNykylampotila = dbItem.TalonTavoitelampotila;
-                    dbItem.Mittaushetki = DateTime.Now;
+                    tiedot.TalonNykylampotila = tiedot.TalonTavoitelampotila;
+                    tiedot.Mittaushetki = DateTime.Now;
                 }
                 db.SaveChanges();
                 OK = true;
@@ -90,8 +86,7 @@ namespace WebApplication3.Controllers
         {
             bool OK = false;
             MobiilikantaContext db = new MobiilikantaContext();
-            Valot valo = db.Valot.Find(uusi.ValoId);
-
+            Valot valo = db.Valot.FirstOrDefault((v) => v.ValoId == uusi.ValoId);
             valo.ValonMaara = uusi.ValonMaara;
             valo.ValonTila = true;
             if (uusi.ValonMaara == 0)
@@ -117,7 +112,7 @@ namespace WebApplication3.Controllers
         {
             bool OK = false;
             MobiilikantaContext db = new MobiilikantaContext();
-            Saunat sauna = db.Saunat.Find(uusi.SaunaId);
+            Saunat sauna = db.Saunat.FirstOrDefault((s) => s.SaunaId == uusi.SaunaId);
             sauna.SaunanTila = uusi.SaunanTila;
 
             try
@@ -138,7 +133,7 @@ namespace WebApplication3.Controllers
         public int? MittaaSauna(int id)
         {
             MobiilikantaContext db = new MobiilikantaContext();
-            Saunat sauna = db.Saunat.Find(id);
+            Saunat sauna = db.Saunat.FirstOrDefault((s) => s.SaunaId == id);
             Random rand = new Random();
 
             try
