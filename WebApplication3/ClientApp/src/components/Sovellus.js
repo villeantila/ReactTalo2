@@ -43,17 +43,19 @@ export class Sovellus extends Component {
     }
 
     talonapinVari = (id) => {
+        //console.log(this.state.talonTiedot.taloId, id);
         if (this.state.talonTiedot.taloId === id) {
             return 'btn btn-primary btn-lg';
         }
         else {
-            return 'btn btn-lg';
+            return 'btn haalea btn-lg';
         }
     }
 
     //TALON TIETOJEN HAKEMINEN: LÄMPÖTILAT, VALOT, SAUNAT
 
     talonValinta = (id) => () => {   
+        //console.log(id)
         axios
             .get('api/TalonTiedot/' + id)
             .then(x => {
@@ -89,9 +91,9 @@ export class Sovellus extends Component {
             <div key={this.state.talonTiedot.taloId}>
                 <h2>Talon tiedot</h2>
                 <h4>Nykylämpötila: {this.state.talonTiedot.talonNykylampotila} &deg;C &nbsp;
-                <button className="btn btn-xs" onClick={this.handleTalonTarkistus()}>Tarkista</button></h4>
+                <button className="btn haalea btn-xs" onClick={this.handleTalonTarkistus()}>Tarkista</button></h4>
                 <h4 className="erikoistapaus">Tavoitelämpötila: {this.state.talonTiedot.talonTavoitelampotila} &deg;C</h4>
-                <input onMouseUp={this.handleSliderMouseUp} onChange={this.handleSlider} type="range" min="14" max="28" value={this.state.talonTiedot.talonTavoitelampotila} step="1" />
+                <input onMouseUp={this.handleSliderMouseUp} onTouchEnd={this.handleSliderMouseUp} onChange={this.handleSlider} type="range" min="14" max="28" value={this.state.talonTiedot.talonTavoitelampotila} step="1" />
             </div>
         );
     }
@@ -163,7 +165,7 @@ export class Sovellus extends Component {
             return 'btn btn-success';
         }
         else {
-            return 'btn';
+            return 'btn haalea';
         }
     }
 
@@ -199,7 +201,7 @@ export class Sovellus extends Component {
         return (
             <div>
                 <h4>{sauna.saunanNimi} {sauna.saunanNykylampotila} &deg;C &nbsp;
-                <button className="btn btn-xs" onClick={this.handleSaunanMittaus(sauna.saunaId)}>Tarkista</button></h4>
+                <button className="btn haalea btn-xs" onClick={this.handleSaunanMittaus(sauna.saunaId)}>Tarkista</button></h4>
                 <div className='btn-group btn-group-justified'>
                     <this.renderSaunaNappi tila={false} id={sauna.saunaId} />
                     <this.renderSaunaNappi tila id={sauna.saunaId} />
@@ -223,7 +225,7 @@ export class Sovellus extends Component {
             return 'btn btn-danger';
         }
         else {
-            return 'btn';
+            return 'btn haalea';
         }
     }
 

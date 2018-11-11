@@ -113,7 +113,7 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [Route("api/MuutaSaunanTilaa")]
 
-        public bool MuokkaaSaunaa(Saunat uusi)
+        public bool MuutaSaunanTilaa(Saunat uusi)
         {
             bool OK = false;
             MobiilikantaContext db = new MobiilikantaContext();

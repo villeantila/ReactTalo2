@@ -8,8 +8,6 @@
 body {
     padding-top: 0;
     padding-bottom: 50px;
-    min-width: 450px;
-    max-width: 768px;
 }
 
 h2 {
@@ -29,4 +27,8 @@ h4 {
 .erikoistapaus {
     margin-top: 5px;
     margin-bottom: 10px;
+}
+
+.haalea {
+    background-color: azure;
 }
